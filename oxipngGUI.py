@@ -56,11 +56,14 @@ class MainWindow(QDialog):
 
 # PICTURES CONTAINER-------
         self.addPictureButton = QPushButton("Add picture")
+        self.compressPicturesButton = QPushButton("Compress")
+        self.compressPicturesButton.setDisabled(True)
 
         picturesGroupBox = QGroupBox("")
         picturesLayout = QVBoxLayout()
         picturesLayout.addStretch(1)
         picturesLayout.addWidget(self.addPictureButton)
+        picturesLayout.addWidget(self.compressPicturesButton)
         picturesGroupBox.setLayout(picturesLayout)
 
         mainLayout = QGridLayout()
