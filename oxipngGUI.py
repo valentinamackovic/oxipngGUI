@@ -18,6 +18,7 @@ class MainWindow(QDialog):
         self.setWindowTitle("oxipng")
         self.setGeometry(400, 300, 800, 600)
 
+# OPTIONS-------
         self.cbInterlacing = QCheckBox('Interlacing')
         self.cbInterlacing.setChecked(True)
 
@@ -44,17 +45,27 @@ class MainWindow(QDialog):
         removeMetadataLayout.addWidget(self.rbRemoveMetadataSafe)
         removeMetadataLayout.addWidget(self.rbRemoveMetadataAll)
 
-        groupBox = QGroupBox("Options")
-        layout = QHBoxLayout()
-        layout.addWidget(self.cbInterlacing)
-        layout.addSpacing(20)
-        layout.addLayout(optimizationLabelLayout)
-        layout.addSpacing(20)
-        layout.addLayout(removeMetadataLayout)
-        groupBox.setLayout(layout)
+        optionsGroupBox = QGroupBox("Options")
+        optionsLayout = QHBoxLayout()
+        optionsLayout.addWidget(self.cbInterlacing)
+        optionsLayout.addSpacing(20)
+        optionsLayout.addLayout(optimizationLabelLayout)
+        optionsLayout.addSpacing(20)
+        optionsLayout.addLayout(removeMetadataLayout)
+        optionsGroupBox.setLayout(optionsLayout)
+
+# PICTURES CONTAINER-------
+        self.addPictureButton = QPushButton("Add picture")
+
+        picturesGroupBox = QGroupBox("")
+        picturesLayout = QVBoxLayout()
+        picturesLayout.addStretch(1)
+        picturesLayout.addWidget(self.addPictureButton)
+        picturesGroupBox.setLayout(picturesLayout)
 
         mainLayout = QGridLayout()
-        mainLayout.addWidget(groupBox, 0, 0)
+        mainLayout.addWidget(optionsGroupBox, 0, 0)
+        mainLayout.addWidget(picturesGroupBox, 1, 0, 2, 0)
 
         mainLayout.setRowStretch(1, 1)
         mainLayout.setColumnStretch(1, 1)
