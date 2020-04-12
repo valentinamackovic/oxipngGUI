@@ -10,6 +10,8 @@ options = {
     "strip": "safe"
 }
 
+pictures = []
+
 
 class MainWindow(QDialog):
     def __init__(self, parent=None):
@@ -56,11 +58,14 @@ class MainWindow(QDialog):
 
 # PICTURES CONTAINER-------
         self.addPictureButton = QPushButton("Add picture")
+        self.addPictureButton.clicked.connect(self.openFileNamesDialog)
         self.compressPicturesButton = QPushButton("Compress")
         self.compressPicturesButton.setDisabled(True)
 
         picturesGroupBox = QGroupBox("")
         picturesLayout = QVBoxLayout()
+        self.picturesGrid = QGridLayout()
+        picturesLayout.addLayout(self.picturesGrid)
         picturesLayout.addStretch(1)
         picturesLayout.addWidget(self.addPictureButton)
         picturesLayout.addWidget(self.compressPicturesButton)
@@ -80,6 +85,23 @@ class MainWindow(QDialog):
         options['interlacing'] = 1 if self.cbInterlacing.isChecked() else 0
         options['optimization'] = self.optimizationSpinBox.value()
         options['strip'] = 'safe' if self.rbRemoveMetadataSafe.isChecked() else 'all'
+
+    def openFileNamesDialog(self):
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.AnyFile)
+        dialog.setViewMode(QFileDialog.Detail)
+        dialog.setNameFilter("Images (*.png *.xpm *.jpg *.jpeg *.svg)")
+        if dialog.exec_():
+            fileNames = dialog.selectedFiles()
+            self.displayPictures(fileNames)
+
+    def displayPictures(self, fileNames):
+        pictures = fileNames
+        pictureBox = QLabel()
+        pixmap = QPixmap(pictures[0])
+        pixmapScaled = pixmap.scaled(70, 70)
+        pictureBox.setPixmap(pixmapScaled)
+        self.picturesGrid.addWidget(pictureBox)
 
 
 if __name__ == '__main__':
