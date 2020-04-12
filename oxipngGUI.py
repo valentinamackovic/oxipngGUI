@@ -5,8 +5,8 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QDialog, QR
                              QCheckBox, QHBoxLayout, QGridLayout, QGroupBox, QPushButton, QFileDialog, QLabel, QSpacerItem, QSpinBox, QButtonGroup, QRadioButton)
 
 options = {
-    "optimization": 2,
-    "interlacing": 1,
+    "optimization": "2",
+    "interlacing": "1",
     "strip": "safe"
 }
 
@@ -60,6 +60,7 @@ class MainWindow(QDialog):
         self.addPictureButton = QPushButton("Add picture")
         self.addPictureButton.clicked.connect(self.openFileNamesDialog)
         self.compressPicturesButton = QPushButton("Compress")
+        self.compressPicturesButton.clicked.connect(self.compressWithOxipng)
         self.compressPicturesButton.setDisabled(True)
 
         picturesGroupBox = QGroupBox("")
@@ -82,8 +83,8 @@ class MainWindow(QDialog):
         self.setOptions()
 
     def setOptions(self):
-        options['interlacing'] = 1 if self.cbInterlacing.isChecked() else 0
-        options['optimization'] = self.optimizationSpinBox.value()
+        options['interlacing'] = "1" if self.cbInterlacing.isChecked() else "0"
+        options['optimization'] = str(self.optimizationSpinBox.value())
         options['strip'] = 'safe' if self.rbRemoveMetadataSafe.isChecked() else 'all'
 
     def openFileNamesDialog(self):
@@ -93,15 +94,33 @@ class MainWindow(QDialog):
         dialog.setNameFilter("Images (*.png *.xpm *.jpg *.jpeg *.svg)")
         if dialog.exec_():
             fileNames = dialog.selectedFiles()
-            self.displayPictures(fileNames)
+            pictures.append(fileNames[0])
+            self.displayPictures()
+            self.compressPicturesButton.setDisabled(False)
 
-    def displayPictures(self, fileNames):
-        pictures = fileNames
+    def displayPictures(self):
         pictureBox = QLabel()
         pixmap = QPixmap(pictures[0])
         pixmapScaled = pixmap.scaled(70, 70)
         pictureBox.setPixmap(pixmapScaled)
         self.picturesGrid.addWidget(pictureBox)
+
+    def compressWithOxipng(self):
+        oxipngCommand = ["oxipng", "-o",
+                         str(options["optimization"]), "-i",
+                         options["interlacing"], "--strip", options["strip"]]
+
+        for picture in pictures:
+            oxipngCommand.append(picture)
+            compress = subprocess.Popen(oxipngCommand, stdout=subprocess.PIPE)
+            output = compress.communicate()[0]
+            print(output)
+
+        for i in reversed(range(self.picturesGrid.count())):
+            if(self.picturesGrid.itemAt(i).widget() != None):
+                self.picturesGrid.itemAt(i).widget().deleteLater()
+
+        self.compressPicturesButton.setDisabled(True)
 
 
 if __name__ == '__main__':
